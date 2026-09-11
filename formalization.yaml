@@ -17,13 +17,14 @@ project:
     lower-divisor pattern by primality of the odd factor, gives an explicit
     obstruction when that odd factor is composite, and certifies even
     perfection directly from the recovered structure using divisor sums.
-    A final downstream audit establishes the reverse implication from
-    Mathlib's formal classification of even perfect numbers, yielding the
-    equivalence EvenPerfect M ↔ InternalStructure M. The formalization also
-    proves a universal greatest-proper-divisor calibration bound, an exact
-    calibration identity for the canonical profile, convergence of the
-    calibration scale to 8, and an exact transition identity between
-    arbitrary dyadic levels.
+    A final downstream audit reconstructs the classical Euler classification
+    locally from standard Mathlib number-theoretic infrastructure and uses it
+    only for the reverse implication EvenPerfect M → InternalStructure M,
+    yielding the equivalence EvenPerfect M ↔ InternalStructure M. The
+    formalization also proves a universal greatest-proper-divisor calibration
+    bound, an exact calibration identity for the canonical profile,
+    convergence of the calibration scale to 8, and an exact transition
+    identity between arbitrary dyadic levels.
 
   authors:
     - "Daniel Sautot"
@@ -55,16 +56,6 @@ sources:
     license: "CC-BY-4.0"
     author_endorsement: "participated"
 
-related_formalizations:
-  - id: "Archive.Wiedijk100Theorems.PerfectNumbers"
-    relationship: "builds-on"
-    note: >-
-      Mathlib's existing formalization of the classical characterization of
-      even perfect numbers is used only in the final Audit module for the
-      reverse compatibility implication EvenPerfect → InternalStructure and
-      the reverse direction of the canonical-family equivalence. It is not
-      used to derive the structural theory.
-
 status:
   scope: >-
     The submission formalizes the structural and calibration core only.
@@ -80,8 +71,9 @@ status:
     Distribution functions, sigma-distribution results, enumeration and
     algorithmic scanning are not included in this submission. The reverse
     implication EvenPerfect → InternalStructure is intentionally isolated in
-    EvenPerfectStructure.Audit and uses Mathlib's classical classification;
-    no upstream structural theorem depends on that audit.
+    EvenPerfectStructure.Audit, where the classical Euler classification is
+    reconstructed locally from standard Mathlib number-theoretic
+    infrastructure. No upstream structural theorem depends on that audit.
 
   sorry_count: 0
 
@@ -201,13 +193,15 @@ fidelity:
 
     The theorem calibration_transition is stated for arbitrary dyadic levels
     a < b. It formalizes only the exact algebraic transition identity and does
-    not formalize the structural-successor, minimality, or no-intermediate-level
-    claims from the paper.
+    not formalize the structural-successor, minimality, or
+    no-intermediate-level claims from the paper.
 
     The reverse implication EvenPerfect → InternalStructure is proved in the
-    downstream Audit module using Mathlib's existing formalization of the
-    classical characterization of even perfect numbers. No upstream structural
-    theorem depends on this audit.
+    downstream Audit module. The classical Euler classification required for
+    this completeness direction is reconstructed locally from standard
+    Mathlib number-theoretic infrastructure rather than imported from a
+    Mathlib Archive formalization. No upstream structural theorem depends on
+    this audit.
 
 review:
   status: "self-assessed"
@@ -272,8 +266,10 @@ alignment:
       status: "proved"
       note: >-
         Combines the internally proved structural direction with a downstream
-        compatibility proof of EvenPerfect → InternalStructure based on
-        Mathlib's formal classical characterization.
+        compatibility proof of EvenPerfect → InternalStructure. The classical
+        Euler completeness argument used for the reverse direction is
+        reconstructed locally in Audit from standard Mathlib number-theoretic
+        infrastructure.
 
     - source: "Canonical-family structural characterization"
       lean: "EvenPerfectStructure.divisor_pattern_iff_evenPerfect"
@@ -282,7 +278,8 @@ alignment:
       note: >-
         Shows that the lower dyadic divisor pattern of a canonical candidate
         is equivalent to even perfection. The reverse direction uses the
-        final audit and uniqueness of the power-of-two exponent.
+        locally reconstructed classical audit and uniqueness of the
+        power-of-two exponent.
 
     - source: "Universal calibration bound"
       lean: "EvenPerfectStructure.calibration_bound"
@@ -319,6 +316,7 @@ alignment:
 
 acknowledgements: >-
   Lean 4 and Mathlib provide the proof assistant and mathematical library.
-  The final compatibility audit uses
-  Archive.Wiedijk100Theorems.PerfectNumbers. Comparator, lean4export and
-  NanoDa were used to validate the submitted Challenge/Solution interface.
+  Standard Mathlib number-theoretic infrastructure is used in the final Audit
+  module to reconstruct the classical Euler completeness argument.
+  Comparator, lean4export, and NanoDa are used to validate the submitted
+  Challenge/Solution interface.

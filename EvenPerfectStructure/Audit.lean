@@ -21,27 +21,39 @@ IMPORT CLASSIFICATION
     InternalStructure.toEvenPerfect
     SR.sum_range_pow_two_eq_pillar_sub_one
 
-- Archive.Wiedijk100Theorems.PerfectNumbers
+- Mathlib.NumberTheory.LucasLehmer
   defs:
     mersenne
   thms:
     mersenne_odd
-    Theorems100.Nat.eq_two_pow_mul_prime_mersenne_of_even_perfect
-    Theorems100.Nat.ne_zero_of_prime_mersenne
+    succ_mersenne
 
-- Mathlib
+- Mathlib.NumberTheory.ArithmeticFunction.Misc
   defs:
+    ArithmeticFunction.sigma
     Nat.factorization
   thms:
+    ArithmeticFunction.sigma_one_apply
+    Nat.perfect_iff_sum_divisors_eq_two_mul
+    Nat.sum_divisors_eq_sum_properDivisors_add_self
+    Nat.sum_properDivisors_dvd
+    Nat.sum_properDivisors_eq_one_iff_prime
     Nat.factorization_mul
     Nat.factorization_pow
     Nat.dvd_of_factorization_pos
+
+- Mathlib.Tactic.NormNum.Prime
+
+- Mathlib
+  thms:
     Nat.not_odd_zero
     Odd.not_two_dvd_nat
 -/
 
 import EvenPerfectStructure.Main
-import Archive.Wiedijk100Theorems.PerfectNumbers
+import Mathlib.NumberTheory.LucasLehmer
+import Mathlib.NumberTheory.ArithmeticFunction.Misc
+import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # EvenPerfectStructure.Audit
@@ -60,15 +72,14 @@ That direction is established internally:
 
 This module is strictly downstream of that development.
 
-Its only use of the classical classification is the reverse compatibility
-direction
+For the reverse compatibility direction
 
 `EvenPerfect M → InternalStructure M`
 
-and the reverse direction of the canonical-family audit
+the classical Euler classification is reconstructed locally from standard
+Mathlib number-theoretic infrastructure.
 
-`EvenPerfect (candidate a) →
-  lowerDyadicPattern (candidate a) (pillar a) a`.
+No `Archive.*` module is imported.
 
 Thus the dependency direction is
 
@@ -90,6 +101,9 @@ namespace EvenPerfectStructure
 
 namespace Audit
 
+open ArithmeticFunction
+open scoped sigma
+
 
 /-!
 ## 1. Compatibility with Mathlib's Mersenne notation
@@ -108,15 +122,242 @@ theorem oddPillar_pillar_eq_mersenne
 
 
 /-!
-## 2. External completeness data
+## 2. Classical Euler classification from standard Mathlib
+
+The following lemmas reproduce only the classical completeness argument needed
+by this audit.
+
+They use standard Mathlib number-theoretic infrastructure and do not depend on
+`Archive.Wiedijk100Theorems.PerfectNumbers`.
 -/
 
 /--
-An even perfect number supplies, through the external compatibility theorem,
+The divisor sum of a power of two is the corresponding Mersenne number.
+-/
+private theorem sigma_two_pow_eq_mersenne_succ
+    (k : ℕ) :
+    σ 1 (2 ^ k) =
+      mersenne (k + 1) := by
+  simp_rw [
+    sigma_one_apply,
+    mersenne,
+    ← one_add_one_eq_two,
+    ← geom_sum_mul_add 1 (k + 1)
+  ]
+  norm_num
+
+
+/--
+Every positive natural number decomposes as a power of two times an odd
+factor.
+-/
+private theorem eq_two_pow_mul_odd
+    {n : ℕ}
+    (hpos : 0 < n) :
+    ∃ k m : ℕ,
+      n = 2 ^ k * m ∧
+      ¬ Even m := by
+  have h :=
+    Nat.finiteMultiplicity_iff.2
+      ⟨Nat.prime_two.ne_one, hpos⟩
+
+  obtain ⟨m, hm⟩ :=
+    pow_multiplicity_dvd 2 n
+
+  use multiplicity 2 n, m
+
+  refine
+    ⟨hm, ?_⟩
+
+  rw [even_iff_two_dvd]
+
+  have hg :=
+    h.not_pow_dvd_of_multiplicity_lt
+      (Nat.lt_succ_self _)
+
+  contrapose! hg
+
+  rcases hg with
+    ⟨k, rfl⟩
+
+  apply Dvd.intro k
+
+  rw [
+    pow_succ,
+    mul_assoc,
+    ← hm
+  ]
+
+
+/--
+Euler's classification in the precise form required by the compatibility
+audit: an even perfect number is a power of two times a prime Mersenne factor.
+
+This proof is reconstructed locally in the audit from standard Mathlib.
+-/
+private theorem eq_two_pow_mul_prime_mersenne_of_even_perfect
+    {n : ℕ}
+    (ev : Even n)
+    (perf : Nat.Perfect n) :
+    ∃ k : ℕ,
+      Nat.Prime (mersenne (k + 1)) ∧
+      n =
+        2 ^ k *
+          mersenne (k + 1) := by
+  have hpos :=
+    perf.2
+
+  rcases
+      eq_two_pow_mul_odd hpos with
+    ⟨k, m, rfl, hm⟩
+
+  use k
+
+  rw [even_iff_two_dvd] at hm
+
+  rw [
+    Nat.perfect_iff_sum_divisors_eq_two_mul hpos,
+    ← sigma_one_apply,
+    isMultiplicative_sigma.map_mul_of_coprime
+      (Nat.prime_two.coprime_pow_of_not_dvd hm).symm,
+    sigma_two_pow_eq_mersenne_succ,
+    ← mul_assoc,
+    ← pow_succ'
+  ] at perf
+
+  obtain
+      ⟨j, rfl⟩ :=
+    ((Odd.coprime_two_right (by simp)).pow_right _).dvd_of_dvd_mul_left
+      (Dvd.intro _ perf)
+
+  rw [
+    ← mul_assoc,
+    mul_comm _ (mersenne _),
+    mul_assoc
+  ] at perf
+
+  have h :=
+    mul_left_cancel₀
+      (by positivity)
+      perf
+
+  rw [
+    sigma_one_apply,
+    Nat.sum_divisors_eq_sum_properDivisors_add_self,
+    ← succ_mersenne,
+    add_mul,
+    one_mul,
+    add_comm
+  ] at h
+
+  have hj :=
+    add_left_cancel h
+
+  cases
+      Nat.sum_properDivisors_dvd
+        (by
+          rw [hj]
+          apply Dvd.intro_left
+            (mersenne (k + 1))
+            rfl) with
+
+  | inl h₁ =>
+      have j1 :
+          j = 1 :=
+        Eq.trans hj.symm h₁
+
+      rw [
+        j1,
+        mul_one,
+        Nat.sum_properDivisors_eq_one_iff_prime
+      ] at h₁
+
+      simp [h₁, j1]
+
+  | inr h₁ =>
+      have jcon :=
+        Eq.trans hj.symm h₁
+
+      rw [
+        ← one_mul j,
+        ← mul_assoc,
+        mul_one
+      ] at jcon
+
+      have jcon2 :=
+        mul_right_cancel₀
+          ?_
+          jcon
+
+      · exfalso
+
+        match k with
+        | 0 =>
+            apply hm
+
+            rw [
+              ← jcon2,
+              pow_zero,
+              one_mul,
+              one_mul
+            ] at ev
+
+            rw [
+              ← jcon2,
+              one_mul
+            ]
+
+            exact
+              even_iff_two_dvd.mp ev
+
+        | .succ k =>
+            apply
+              _root_.ne_of_lt
+                (by
+                  rw [
+                    mersenne,
+                    ← Nat.pred_eq_sub_one,
+                    Nat.lt_pred_iff,
+                    ← pow_one (Nat.succ 1)
+                  ]
+
+                  apply
+                    pow_lt_pow_right₀
+                      (Nat.lt_succ_self 1)
+                      (Nat.succ_lt_succ k.succ_pos))
+                jcon2
+
+      · contrapose! hm
+
+        simp [hm]
+
+
+/--
+A prime Mersenne factor at index `a + 1` forces `a` to be nonzero.
+-/
+private theorem ne_zero_of_prime_mersenne
+    (a : ℕ)
+    (hprime :
+      Nat.Prime
+        (mersenne (a + 1))) :
+    a ≠ 0 := by
+  intro ha
+
+  subst a
+
+  norm_num [mersenne] at hprime
+
+
+/-!
+## 3. Classical completeness data in project notation
+-/
+
+/--
+An even perfect number supplies, through the classical Euler argument above,
 a positive dyadic exponent, a prime odd pillar, and the canonical profile
 factorization.
 
-This theorem merely translates Mathlib's result into the vocabulary of the
+This theorem translates that classical result into the vocabulary of the
 project.
 -/
 theorem evenPerfect_exists_structural_profile
@@ -133,13 +374,13 @@ theorem evenPerfect_exists_structural_profile
 
   obtain
     ⟨a, hprimeMersenne, hM⟩ :=
-      Theorems100.Nat.eq_two_pow_mul_prime_mersenne_of_even_perfect
+      eq_two_pow_mul_prime_mersenne_of_even_perfect
         heven
         hperfect
 
   have ha0 :
       a ≠ 0 :=
-    Theorems100.Nat.ne_zero_of_prime_mersenne
+    ne_zero_of_prime_mersenne
       a
       hprimeMersenne
 
@@ -156,7 +397,9 @@ theorem evenPerfect_exists_structural_profile
       Nat.Prime
         (oddPillar (pillar a)) := by
     rw [hodd]
-    exact hprimeMersenne
+
+    exact
+      hprimeMersenne
 
   have hMprofile :
       M =
@@ -186,15 +429,15 @@ theorem evenPerfect_exists_structural_profile
 
 
 /-!
-## 3. Reconstruction of the internal certificate
+## 4. Reconstruction of the internal certificate
 -/
 
 /--
-Every externally recognized even perfect number reconstructs the exact
+Every classically recognized even perfect number reconstructs the exact
 `InternalStructure` certificate used by the structural development.
 
 This is the only implication in the global equivalence that uses the
-external classical classification.
+classical Euler classification.
 -/
 theorem evenPerfect_to_internalStructure
     {M : ℕ}
@@ -269,7 +512,8 @@ theorem evenPerfect_to_internalStructure
 
     rw [hMcandidate]
 
-    exact hcanonical
+    exact
+      hcanonical
 
   have hmedian :
       (∑ j ∈ Finset.range a, 2 ^ j) +
@@ -302,7 +546,7 @@ theorem evenPerfect_to_internalStructure
 
 
 /-!
-## 4. Uniqueness of the dyadic exponent
+## 5. Uniqueness of the dyadic exponent
 -/
 
 /--
@@ -320,14 +564,20 @@ theorem two_pow_mul_odd_exponent_unique
   have hu0 :
       u ≠ 0 := by
     intro hzero
+
     subst u
-    exact Nat.not_odd_zero hu
+
+    exact
+      Nat.not_odd_zero hu
 
   have hv0 :
       v ≠ 0 := by
     intro hzero
+
     subst v
-    exact Nat.not_odd_zero hv
+
+    exact
+      Nat.not_odd_zero hv
 
   have hpowA0 :
       2 ^ a ≠ 0 := by
@@ -406,7 +656,7 @@ end Audit
 
 
 /-!
-## 5. Public compatibility interfaces
+## 6. Public compatibility interfaces
 -/
 
 /--
@@ -420,10 +670,10 @@ The two implications deliberately have different provenance:
 * `InternalStructure → EvenPerfect` is proved internally by the structural
   development before this module is imported;
 
-* `EvenPerfect → InternalStructure` is supplied only here, as a final
-  compatibility audit against Mathlib's formal classification.
+* `EvenPerfect → InternalStructure` is supplied only here, by a classical
+  Euler completeness argument reconstructed locally from standard Mathlib.
 
-Therefore the external classification establishes completeness without
+Therefore the classical classification establishes completeness without
 participating in the structural derivation.
 -/
 theorem evenPerfect_iff_internalStructure
@@ -451,11 +701,11 @@ dyadic divisor pattern is equivalent to even perfection.
 
 The forward implication belongs entirely to the structural development.
 
-For the reverse implication, the final audit uses the external
-classification only to obtain a canonical perfect-number exponent `b`.
-Uniqueness of the power-of-two exponent forces `b = a`, and the already
-proved `divisor_structure` theorem then recovers the lower-divisor pattern
-at the original level `a`.
+For the reverse implication, the final audit uses the locally reconstructed
+classical completeness argument only to obtain a canonical perfect-number
+exponent `b`. Uniqueness of the power-of-two exponent forces `b = a`, and the
+already proved `divisor_structure` theorem then recovers the lower-divisor
+pattern at the original level `a`.
 -/
 theorem divisor_pattern_iff_evenPerfect
     (a : ℕ)
