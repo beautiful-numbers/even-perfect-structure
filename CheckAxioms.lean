@@ -1,0 +1,6 @@
+import EvenPerfectStructure.Audit
+
+#print axioms EvenPerfectStructure.evenPerfect_iff_internalStructure
+#print axioms EvenPerfectStructure.divisor_pattern_iff_evenPerfect
+#print axioms EvenPerfectStructure.internal_structure_implies_evenPerfect
+#print axioms EvenPerfectStructure.calibration_tends_to_eight

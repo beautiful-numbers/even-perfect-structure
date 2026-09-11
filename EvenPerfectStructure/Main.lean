@@ -1,0 +1,8 @@
+import EvenPerfectStructure.Basic
+import EvenPerfectStructure.SR.Definitions
+import EvenPerfectStructure.SR.Dyadic
+import EvenPerfectStructure.SR.Median
+import EvenPerfectStructure.DivisorPattern
+import EvenPerfectStructure.Certification
+import EvenPerfectStructure.Calibration
+import EvenPerfectStructure.Sequential

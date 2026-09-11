@@ -1,8 +1,34 @@
 {
   "challenge_module": "Challenge",
   "solution_module": "Solution",
-  "theorem_names": ["PalomarTemplate.main_result"],
-  "definition_names": [],
-  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "theorem_names": [
+    "EvenPerfectStructure.median_identity_recovers_profile",
+    "EvenPerfectStructure.divisor_structure",
+    "EvenPerfectStructure.composite_odd_factor_breaks_pattern",
+    "EvenPerfectStructure.internal_structure_implies_evenPerfect",
+    "EvenPerfectStructure.evenPerfect_iff_internalStructure",
+    "EvenPerfectStructure.divisor_pattern_iff_evenPerfect",
+    "EvenPerfectStructure.calibration_bound",
+    "EvenPerfectStructure.profile_calibration_identity",
+    "EvenPerfectStructure.calibration_tends_to_eight",
+    "EvenPerfectStructure.calibration_transition"
+  ],
+  "definition_names": [
+    "EvenPerfectStructure.pillar",
+    "EvenPerfectStructure.oddPillar",
+    "EvenPerfectStructure.profile",
+    "EvenPerfectStructure.candidate",
+    "EvenPerfectStructure.lowerDyadicPattern",
+    "EvenPerfectStructure.EvenPerfect",
+    "EvenPerfectStructure.InternalStructure",
+    "EvenPerfectStructure.greatestProperDivisor",
+    "EvenPerfectStructure.gauge",
+    "EvenPerfectStructure.theta"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
   "enable_nanoda": true
 }
