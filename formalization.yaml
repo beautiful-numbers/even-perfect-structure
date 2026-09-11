@@ -2,6 +2,9 @@
 
 version: "v0.4"
 
+repository:
+  role: "substantive-development"
+
 project:
   name: "Structural Calibration and Sigma Distribution of Even Perfect Numbers"
 
