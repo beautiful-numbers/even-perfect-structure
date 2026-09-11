@@ -50,7 +50,7 @@ sources:
       manuscript. Distribution, enumeration, and algorithmic scanning are
       intentionally outside the scope of this first formalization.
     license: "CC-BY-4.0"
-    author_endorsement: "authored"
+    author_endorsement: "participated"
 
 related_formalizations:
   - id: "Archive.Wiedijk100Theorems.PerfectNumbers"
@@ -90,13 +90,68 @@ status:
     - "Classical.choice"
 
   main_results:
-    - "EvenPerfectStructure.evenPerfect_iff_internalStructure"
-    - "EvenPerfectStructure.divisor_pattern_iff_evenPerfect"
-    - "EvenPerfectStructure.internal_structure_implies_evenPerfect"
-    - "EvenPerfectStructure.calibration_bound"
-    - "EvenPerfectStructure.profile_calibration_identity"
-    - "EvenPerfectStructure.calibration_tends_to_eight"
-    - "EvenPerfectStructure.calibration_transition"
+    - declaration: "EvenPerfectStructure.evenPerfect_iff_internalStructure"
+      file: "EvenPerfectStructure/Audit.lean"
+      sorry_count: 0
+      axioms:
+        - "propext"
+        - "Quot.sound"
+        - "Classical.choice"
+      comparator_config: "comparator.json"
+
+    - declaration: "EvenPerfectStructure.divisor_pattern_iff_evenPerfect"
+      file: "EvenPerfectStructure/Audit.lean"
+      sorry_count: 0
+      axioms:
+        - "propext"
+        - "Quot.sound"
+        - "Classical.choice"
+      comparator_config: "comparator.json"
+
+    - declaration: "EvenPerfectStructure.internal_structure_implies_evenPerfect"
+      file: "EvenPerfectStructure/Certification.lean"
+      sorry_count: 0
+      axioms:
+        - "propext"
+        - "Quot.sound"
+        - "Classical.choice"
+      comparator_config: "comparator.json"
+
+    - declaration: "EvenPerfectStructure.calibration_bound"
+      file: "EvenPerfectStructure/Calibration.lean"
+      sorry_count: 0
+      axioms:
+        - "propext"
+        - "Quot.sound"
+        - "Classical.choice"
+      comparator_config: "comparator.json"
+
+    - declaration: "EvenPerfectStructure.profile_calibration_identity"
+      file: "EvenPerfectStructure/Calibration.lean"
+      sorry_count: 0
+      axioms:
+        - "propext"
+        - "Quot.sound"
+        - "Classical.choice"
+      comparator_config: "comparator.json"
+
+    - declaration: "EvenPerfectStructure.calibration_tends_to_eight"
+      file: "EvenPerfectStructure/Calibration.lean"
+      sorry_count: 0
+      axioms:
+        - "propext"
+        - "Quot.sound"
+        - "Classical.choice"
+      comparator_config: "comparator.json"
+
+    - declaration: "EvenPerfectStructure.calibration_transition"
+      file: "EvenPerfectStructure/Sequential.lean"
+      sorry_count: 0
+      axioms:
+        - "propext"
+        - "Quot.sound"
+        - "Classical.choice"
+      comparator_config: "comparator.json"
 
 automation:
   methods:
